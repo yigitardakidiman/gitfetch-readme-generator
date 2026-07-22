@@ -1,10 +1,37 @@
 import { fetchGitHubUser } from '@/lib/github-api';
-import { getDefaultAsciiAvatar } from '@/lib/ascii-engine';
+import { getDefaultAsciiAvatar, rgbaToAscii } from '@/lib/ascii-engine';
 import { PRESET_ASCII_LIBRARY } from '@/lib/ascii-presets';
 import { buildStatsLines } from '@/lib/neofetch-builder';
 import { generateSvgCard } from '@/lib/svg-exporter';
+import { PNG } from 'pngjs';
+import jpeg from 'jpeg-js';
 
 export const runtime = 'nodejs';
+
+async function fetchAvatarAscii(avatarUrl, width = 38) {
+  try {
+    const res = await fetch(avatarUrl);
+    if (!res.ok) return null;
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    let decoded = null;
+    if (avatarUrl.includes('.png') || buffer[0] === 0x89) {
+      const png = PNG.sync.read(buffer);
+      decoded = { width: png.width, height: png.height, data: png.data };
+    } else {
+      const jpg = jpeg.decode(buffer, { useTolerantDecoder: true });
+      decoded = { width: jpg.width, height: jpg.height, data: jpg.data };
+    }
+
+    if (decoded && decoded.data) {
+      return rgbaToAscii(decoded.data, decoded.width, decoded.height, { width });
+    }
+  } catch (e) {
+    console.warn("Failed to convert avatar to ASCII on server:", e);
+  }
+  return null;
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -38,9 +65,19 @@ export async function GET(request) {
   // Attempt to load compressed custom config from URL parameter
   if (configParam) {
     try {
-      const decodedString = Buffer.from(configParam, 'base64url').toString('utf-8');
+      let rawParam = configParam;
+      if (rawParam.includes('%')) {
+        try { rawParam = decodeURIComponent(rawParam); } catch (_) {}
+      }
+      const base64 = rawParam.replace(/-/g, '+').replace(/_/g, '/');
+      let decodedString = Buffer.from(base64, 'base64').toString('utf-8');
+      if (decodedString.includes('%7B') || decodedString.includes('%22')) {
+        try { decodedString = decodeURIComponent(decodedString); } catch (_) {}
+      }
       const decoded = JSON.parse(decodedString);
-      if (decoded.asciiLines && Array.isArray(decoded.asciiLines)) asciiLines = decoded.asciiLines;
+      if (decoded.asciiLines && Array.isArray(decoded.asciiLines) && decoded.asciiLines.length > 0) {
+        asciiLines = decoded.asciiLines;
+      }
       if (decoded.fields && Array.isArray(decoded.fields)) fields = decoded.fields;
       if (decoded.headerTitle) title = decoded.headerTitle;
       if (decoded.customTheme) customTheme = decoded.customTheme;
@@ -62,6 +99,12 @@ export async function GET(request) {
         { key: "Followers", value: `${data.followers} Followers` },
         { key: "Stars", value: `${data.stars} Total Stars` }
       ];
+      if (data.avatarUrl) {
+        const serverAscii = await fetchAvatarAscii(data.avatarUrl);
+        if (serverAscii && serverAscii.length > 0) {
+          asciiLines = serverAscii;
+        }
+      }
     } catch (e) {
       console.warn("API route GitHub fetch fallback:", e);
     }

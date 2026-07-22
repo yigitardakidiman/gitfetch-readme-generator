@@ -34,9 +34,17 @@ export default function PreviewPanel({ state, onShowToast }) {
       customTheme: state.customThemeEnabled ? state.customTheme : null
     };
     const str = JSON.stringify(configObj);
-    encodedConfig = typeof window !== 'undefined'
-      ? btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)))
-      : '';
+    if (typeof window !== 'undefined') {
+      const utf8Bytes = new TextEncoder().encode(str);
+      let binary = '';
+      for (let i = 0; i < utf8Bytes.length; i++) {
+        binary += String.fromCharCode(utf8Bytes[i]);
+      }
+      encodedConfig = btoa(binary)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    }
   } catch (e) {
     console.warn("Base64 encode error:", e);
   }
@@ -239,21 +247,42 @@ export default function PreviewPanel({ state, onShowToast }) {
 
         {activeTab === 'api' && (
           <div className="flex flex-col gap-4 text-slate-200">
+            {/* Option 1: Clean Short Live Link */}
             <div className="bg-indigo-500/10 border border-indigo-500/30 p-4 rounded-xl flex flex-col gap-2">
               <h3 className="font-bold text-sm text-indigo-300 flex items-center gap-2">
-                <span>⚡ Next.js Live Dynamic SVG Link</span>
+                <span>⚡ 1. Kısa & Temiz Canlı Link (Önerilen)</span>
               </h3>
               <p className="text-xs text-slate-300">
-                Paste this link directly into your GitHub README.md! Next.js will dynamically render the SVG card:
+                GitHub profil resminizi ve bilgilerinizi otomatik canlı çeker. README.md için en kısa ve temiz linktir:
               </p>
-              <div className="flex gap-2 items-center bg-slate-950 p-2 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-cyan-400">{`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`}</span>
+              <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
+                <span className="flex-1 select-all text-cyan-400">{`<img src="${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}" alt="Neofetch Terminal" />`}</span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`, 'Live API Tag')}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded text-xs font-semibold shrink-0"
+                  onClick={() => copyToClipboard(`<img src="${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}" alt="Neofetch Terminal" />`, 'Short API Link')}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1"
                 >
-                  {copied === 'Live API Tag' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy
+                  {copied === 'Short API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
+                </button>
+              </div>
+            </div>
+
+            {/* Option 2: Full State Custom Link */}
+            <div className="bg-slate-900/60 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+              <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
+                <span>🛠️ 2. Özel Stüdyo Çizimi İçeren Tam Link</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Stüdyoda elle değiştirdiğiniz özel ASCII çizimlerini ve özelleştirilmiş alanları paket olarak saklar:
+              </p>
+              <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
+                <span className="flex-1 select-all text-slate-400">{`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`}</span>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`, 'Full API Link')}
+                  className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1 border border-white/10"
+                >
+                  {copied === 'Full API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
                 </button>
               </div>
             </div>
