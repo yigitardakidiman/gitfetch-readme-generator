@@ -10,18 +10,39 @@ export const runtime = 'nodejs';
 
 async function fetchAvatarAscii(avatarUrl, width = 54) {
   try {
-    const res = await fetch(avatarUrl);
+    const targetUrl = avatarUrl.includes('githubusercontent.com')
+      ? (avatarUrl.includes('?') ? `${avatarUrl}&s=200` : `${avatarUrl}?s=200`)
+      : avatarUrl;
+
+    const res = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/png,image/jpeg,image/*;q=0.9'
+      }
+    });
+
     if (!res.ok) return null;
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     let decoded = null;
-    if (avatarUrl.includes('.png') || buffer[0] === 0x89) {
+
+    // 1. Try PNG decoding
+    try {
       const png = PNG.sync.read(buffer);
-      decoded = { width: png.width, height: png.height, data: png.data };
-    } else {
-      const jpg = jpeg.decode(buffer, { useTolerantDecoder: true });
-      decoded = { width: jpg.width, height: jpg.height, data: jpg.data };
+      if (png && png.width && png.height && png.data) {
+        decoded = { width: png.width, height: png.height, data: png.data };
+      }
+    } catch (_) {}
+
+    // 2. Try JPEG decoding if PNG failed
+    if (!decoded) {
+      try {
+        const jpg = jpeg.decode(buffer, { useTolerantDecoder: true, maxMemoryUsageInMB: 512 });
+        if (jpg && jpg.width && jpg.height && jpg.data) {
+          decoded = { width: jpg.width, height: jpg.height, data: jpg.data };
+        }
+      } catch (_) {}
     }
 
     if (decoded && decoded.data) {
@@ -40,6 +61,9 @@ export async function GET(request) {
   const presetAsciiKey = searchParams.get('presetAscii');
   const fontSize = searchParams.get('fontSize') ? parseFloat(searchParams.get('fontSize')) : undefined;
   const configParam = searchParams.get('config');
+
+  const userWidthParam = searchParams.get('asciiWidth') || searchParams.get('width');
+  const targetAsciiWidth = userWidthParam ? parseInt(userWidthParam, 10) : 55;
 
   let title = user ? `${user}@github` : 'username@hostname';
   let asciiLines = getDefaultAsciiAvatar();
@@ -115,7 +139,7 @@ export async function GET(request) {
         { key: "Followers", value: `${data.followers} | Following: ${data.following}` }
       ];
       if (data.avatarUrl) {
-        const serverAscii = await fetchAvatarAscii(data.avatarUrl, 54);
+        const serverAscii = await fetchAvatarAscii(data.avatarUrl, targetAsciiWidth);
         if (serverAscii && serverAscii.length > 0) {
           asciiLines = serverAscii;
         }

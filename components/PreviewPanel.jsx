@@ -53,7 +53,9 @@ export default function PreviewPanel({ state, onShowToast }) {
     ? window.location.origin
     : 'https://gitfetch-readme-generator.vercel.app';
 
-  const liveApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
+  const asciiWidthParam = state.asciiWidth ? `&asciiWidth=${state.asciiWidth}` : '';
+  const shortApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${asciiWidthParam}`;
+  const liveApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${asciiWidthParam}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
@@ -256,10 +258,10 @@ export default function PreviewPanel({ state, onShowToast }) {
                 GitHub profil resminizi ve bilgilerinizi otomatik canlı çeker. README.md için en kısa ve temiz linktir:
               </p>
               <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-cyan-400">{`<img src="${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}" alt="Neofetch Terminal" />`}</span>
+                <span className="flex-1 select-all text-cyan-400">{`<img src="${shortApiUrl}" alt="Neofetch Terminal" />`}</span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(`<img src="${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}" alt="Neofetch Terminal" />`, 'Short API Link')}
+                  onClick={() => copyToClipboard(`<img src="${shortApiUrl}" alt="Neofetch Terminal" />`, 'Short API Link')}
                   className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1"
                 >
                   {copied === 'Short API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
