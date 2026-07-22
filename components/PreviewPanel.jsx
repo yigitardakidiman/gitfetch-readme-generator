@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { COLOR_THEMES } from '@/lib/presets';
 import { buildStatsLines, mergeSideBySide, buildMarkdownCodeBlock, buildHtmlPreBlock } from '@/lib/neofetch-builder';
 import { generateSvgCard } from '@/lib/svg-exporter';
-import { buildMarkdownBadges } from '@/lib/tech-badges';
 import { Copy, Download, Terminal, Code, FileCode, Link, Check } from 'lucide-react';
 
 export default function PreviewPanel({ state, onShowToast }) {
@@ -15,8 +14,7 @@ export default function PreviewPanel({ state, onShowToast }) {
   const statsLines = buildStatsLines(state.headerTitle, state.headerSeparator, [{ name: "", fields: state.fields }]);
   const mergedLines = mergeSideBySide(state.asciiLines, statsLines);
   const mdCode = buildMarkdownCodeBlock(mergedLines);
-  const badgesMarkdown = buildMarkdownBadges(state.selectedBadges, state.badgeStyle);
-  const fullMarkdownCode = badgesMarkdown ? `${mdCode}\n\n${badgesMarkdown}` : mdCode;
+  const fullMarkdownCode = mdCode;
 
   const htmlPreCode = buildHtmlPreBlock(mergedLines, state.customFontSize > 0 ? state.customFontSize : 10);
   const svgCode = generateSvgCard(state.asciiLines, statsLines, {
@@ -61,8 +59,35 @@ export default function PreviewPanel({ state, onShowToast }) {
   if (state.contrast !== undefined && state.contrast !== 1.2) asciiParams.set('contrast', state.contrast);
   if (state.charSetKey && state.charSetKey !== 'detailed') asciiParams.set('charSetKey', state.charSetKey);
   if (state.invert) asciiParams.set('invert', 'true');
+  if (state.dither) asciiParams.set('dither', 'true');
+  if (state.bgThreshold > 0) asciiParams.set('bgThreshold', state.bgThreshold);
+  if (state.customFontSize > 0) asciiParams.set('fontSize', state.customFontSize);
 
-  const shortApiUrl = `${baseUrl}/api/svg?${asciiParams.toString()}`;
+  let textOnlyConfig = '';
+  try {
+    const textObj = {
+      fields: state.fields,
+      headerTitle: state.headerTitle,
+      headerSeparator: state.headerSeparator,
+      customTheme: state.customThemeEnabled ? state.customTheme : null
+    };
+    const str = JSON.stringify(textObj);
+    if (typeof window !== 'undefined') {
+      const utf8Bytes = new TextEncoder().encode(str);
+      let binary = '';
+      for (let i = 0; i < utf8Bytes.length; i++) {
+        binary += String.fromCharCode(utf8Bytes[i]);
+      }
+      textOnlyConfig = btoa(binary)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    }
+  } catch (e) {
+    console.warn("Text config encode error:", e);
+  }
+
+  const shortApiUrl = `${baseUrl}/api/svg?${asciiParams.toString()}${textOnlyConfig ? `&config=${encodeURIComponent(textOnlyConfig)}` : ''}`;
   const liveApiUrl = `${baseUrl}/api/svg?${asciiParams.toString()}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
 
   const copyToClipboard = (text, type) => {
@@ -223,7 +248,7 @@ export default function PreviewPanel({ state, onShowToast }) {
                 onClick={() => copyToClipboard(fullMarkdownCode, 'Markdown Code')}
                 className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
               >
-                {copied === 'Markdown Code' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy Markdown + Badges
+                {copied === 'Markdown Code' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy Markdown
               </button>
               <button
                 type="button"

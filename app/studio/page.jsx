@@ -5,7 +5,6 @@ import Header from '@/components/Header';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import AsciiControls from '@/components/AsciiControls';
 import FieldEditor from '@/components/FieldEditor';
-import BadgePicker from '@/components/BadgePicker';
 import CustomThemePicker from '@/components/CustomThemePicker';
 import PreviewPanel from '@/components/PreviewPanel';
 import Link from 'next/link';
@@ -332,16 +331,6 @@ export default function StudioPage() {
               onChangeState={(partial) => setState(prev => ({ ...prev, ...partial }))}
               onImageLoaded={handleImageLoaded}
               onSelectPresetAscii={handleSelectPresetAscii}
-            />
-          </CollapsibleCard>
-
-          {/* Tech Stack Badges Picker */}
-          <CollapsibleCard title="Tech Stack Badges Picker" icon="🛡️" defaultOpen={false}>
-            <BadgePicker
-              selectedBadges={state.selectedBadges}
-              badgeStyle={state.badgeStyle}
-              onChangeSelectedBadges={(badges) => setState(prev => ({ ...prev, selectedBadges: badges }))}
-              onChangeStyle={(style) => setState(prev => ({ ...prev, badgeStyle: style }))}
             />
           </CollapsibleCard>
 

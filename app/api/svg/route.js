@@ -120,6 +120,16 @@ export async function GET(request) {
       const decoded = JSON.parse(decodedString);
       if (decoded.asciiLines && Array.isArray(decoded.asciiLines) && decoded.asciiLines.length > 0) {
         asciiLines = decoded.asciiLines;
+      } else if (user) {
+        try {
+          const data = await fetchGitHubUser(user);
+          if (data.avatarUrl) {
+            const serverAscii = await fetchAvatarAscii(data.avatarUrl, targetAsciiWidth, asciiOptions);
+            if (serverAscii && serverAscii.length > 0) asciiLines = serverAscii;
+          }
+        } catch (e) {
+          console.warn("Config avatar fetch error:", e);
+        }
       }
       if (decoded.fields && Array.isArray(decoded.fields)) fields = decoded.fields;
       if (decoded.headerTitle) title = decoded.headerTitle;

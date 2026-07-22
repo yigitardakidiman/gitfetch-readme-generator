@@ -110,16 +110,6 @@ export default function LandingPage() {
             <span>$ open-studio --create</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-
-          <a
-            href="https://github.com/Andrew6rant/Andrew6rant"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] font-medium text-xs px-6 py-3.5 rounded-md border border-[#30363d] flex items-center justify-center gap-2 transition-all"
-          >
-            <Github className="w-4 h-4 text-[#8b949e]" />
-            <span>view reference repo</span>
-          </a>
         </div>
 
         {/* Terminal Live Preview Window */}

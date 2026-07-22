@@ -1,7 +1,6 @@
 'use client';
 
 import { CHAR_SETS } from '@/lib/ascii-engine';
-import { PRESET_ASCII_LIBRARY } from '@/lib/ascii-presets';
 
 export default function AsciiControls({
   state,
@@ -31,25 +30,6 @@ export default function AsciiControls({
 
   return (
     <div className="flex flex-col gap-4 text-xs">
-      {/* Preset ASCII Avatars */}
-      <div className="flex flex-col gap-1.5 bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
-        <label className="text-slate-400 font-medium flex items-center gap-1.5">
-          <span>✨ Ready Preset Avatars:</span>
-        </label>
-        <div className="flex gap-1.5 flex-wrap">
-          {Object.entries(PRESET_ASCII_LIBRARY).map(([key, item]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onSelectPresetAscii && onSelectPresetAscii(item.lines)}
-              className="bg-slate-800 hover:bg-indigo-600/80 hover:text-white text-slate-300 px-2.5 py-1 rounded-lg text-[11px] flex items-center gap-1 transition-all border border-white/5"
-            >
-              <span>{item.icon}</span>
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* File Dropzone */}
       <div
