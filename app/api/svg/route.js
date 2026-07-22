@@ -1,5 +1,6 @@
 import { fetchGitHubUser } from '@/lib/github-api';
 import { getDefaultAsciiAvatar } from '@/lib/ascii-engine';
+import { PRESET_ASCII_LIBRARY } from '@/lib/ascii-presets';
 import { buildStatsLines } from '@/lib/neofetch-builder';
 import { generateSvgCard } from '@/lib/svg-exporter';
 
@@ -9,10 +10,16 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const user = searchParams.get('user') || searchParams.get('username');
   const themeKey = searchParams.get('theme') || 'dracula';
+  const presetAsciiKey = searchParams.get('presetAscii');
   const fontSize = searchParams.get('fontSize') ? parseFloat(searchParams.get('fontSize')) : undefined;
+  const configParam = searchParams.get('config');
 
   let title = user ? `${user}@github` : 'username@hostname';
   let asciiLines = getDefaultAsciiAvatar();
+
+  if (presetAsciiKey && PRESET_ASCII_LIBRARY[presetAsciiKey]) {
+    asciiLines = PRESET_ASCII_LIBRARY[presetAsciiKey].lines;
+  }
 
   let fields = [
     { key: "OS", value: "Windows 11, macOS 15, Linux" },
@@ -26,7 +33,21 @@ export async function GET(request) {
     { key: "Repos", value: "42 | Stars: 156" }
   ];
 
-  if (user) {
+  let customTheme = null;
+
+  // Attempt to load compressed custom config from URL parameter
+  if (configParam) {
+    try {
+      const decodedString = Buffer.from(configParam, 'base64url').toString('utf-8');
+      const decoded = JSON.parse(decodedString);
+      if (decoded.asciiLines && Array.isArray(decoded.asciiLines)) asciiLines = decoded.asciiLines;
+      if (decoded.fields && Array.isArray(decoded.fields)) fields = decoded.fields;
+      if (decoded.headerTitle) title = decoded.headerTitle;
+      if (decoded.customTheme) customTheme = decoded.customTheme;
+    } catch (e) {
+      console.warn("Could not decode SVG config param:", e);
+    }
+  } else if (user) {
     try {
       const data = await fetchGitHubUser(user);
       title = `${data.username}@github`;
@@ -51,6 +72,7 @@ export async function GET(request) {
 
   const svgContent = generateSvgCard(asciiLines, statsLines, {
     themeKey,
+    customTheme,
     fontSize
   });
 

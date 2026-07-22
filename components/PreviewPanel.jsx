@@ -25,9 +25,27 @@ export default function PreviewPanel({ state, onShowToast }) {
     fontSize: state.customFontSize > 0 ? state.customFontSize : undefined
   });
 
-  const liveApiUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/api/svg?user=${state.headerTitle.split('@')[0] || 'user'}&theme=${state.themeKey}`
-    : `https://readme-maker.vercel.app/api/svg?user=${state.headerTitle.split('@')[0] || 'user'}&theme=${state.themeKey}`;
+  let encodedConfig = '';
+  try {
+    const configObj = {
+      asciiLines: state.asciiLines,
+      fields: state.fields,
+      headerTitle: state.headerTitle,
+      customTheme: state.customThemeEnabled ? state.customTheme : null
+    };
+    const str = JSON.stringify(configObj);
+    encodedConfig = typeof window !== 'undefined'
+      ? btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)))
+      : '';
+  } catch (e) {
+    console.warn("Base64 encode error:", e);
+  }
+
+  const baseUrl = typeof window !== 'undefined'
+    ? window.location.origin
+    : 'https://gitfetch-readme-generator.vercel.app';
+
+  const liveApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
