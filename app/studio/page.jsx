@@ -84,23 +84,7 @@ export default function StudioPage() {
     setTimeout(() => setToastMessage(''), 3000);
   };
 
-  // Restore state from LocalStorage on initial load
-  useEffect(() => {
-    const saved = localStorage.getItem('readme_maker_config');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setState(prev => ({ ...prev, ...parsed }));
-      } catch (e) {
-        console.warn("Failed to restore saved config:", e);
-      }
-    }
-  }, []);
-
-  // Save state to LocalStorage on change
-  useEffect(() => {
-    localStorage.setItem('readme_maker_config', JSON.stringify(state));
-  }, [state]);
+  // ASCII Rendering effect
 
   // Re-render ASCII whenever parameters change
   useEffect(() => {
@@ -138,17 +122,31 @@ export default function StudioPage() {
     state.dither
   ]);
 
-  const handleImageLoaded = (src) => {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = () => {
-      setCurrentImgElement(img);
-      showToast('Image loaded successfully!');
-    };
-    img.onerror = () => {
-      showToast('Could not load image.');
-    };
-    img.src = src;
+  const handleImageLoaded = async (src) => {
+    try {
+      let finalSrc = src;
+      if (typeof src === 'string' && src.startsWith('http')) {
+        const res = await fetch(src);
+        if (res.ok) {
+          const blob = await res.blob();
+          finalSrc = URL.createObjectURL(blob);
+        }
+      }
+      const img = new Image();
+      img.onload = () => {
+        setCurrentImgElement(img);
+        showToast('Image loaded successfully!');
+      };
+      img.onerror = () => {
+        showToast('Could not load image.');
+      };
+      img.src = finalSrc;
+    } catch (e) {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => setCurrentImgElement(img);
+      img.src = src;
+    }
   };
 
   const handleSelectPresetAscii = (presetLines) => {
@@ -304,7 +302,7 @@ export default function StudioPage() {
       {/* Main Grid */}
       <main className="flex-1 max-w-[1800px] w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-[440px_1fr] gap-6">
         {/* Left Controls Sidebar */}
-        <aside className="flex flex-col gap-4 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <aside data-lenis-prevent className="flex flex-col gap-4 lg:sticky lg:top-4 max-h-[calc(100vh-90px)] overflow-y-auto pr-2">
           {/* GitHub Auto Import */}
           <CollapsibleCard title="GitHub Auto Import" icon="⚡" defaultOpen={false}>
             <div className="flex gap-2">

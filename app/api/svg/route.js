@@ -8,7 +8,7 @@ import jpeg from 'jpeg-js';
 
 export const runtime = 'nodejs';
 
-async function fetchAvatarAscii(avatarUrl, width = 54) {
+async function fetchAvatarAscii(avatarUrl, width = 54, asciiOptions = {}) {
   try {
     const targetUrl = avatarUrl.includes('githubusercontent.com')
       ? (avatarUrl.includes('?') ? `${avatarUrl}&s=200` : `${avatarUrl}?s=200`)
@@ -46,7 +46,14 @@ async function fetchAvatarAscii(avatarUrl, width = 54) {
     }
 
     if (decoded && decoded.data) {
-      return rgbaToAscii(decoded.data, decoded.width, decoded.height, { width, autoEnhance: true, edgeSharpen: 0.4 });
+      return rgbaToAscii(decoded.data, decoded.width, decoded.height, {
+        width,
+        autoEnhance: true,
+        edgeSharpen: asciiOptions.edgeSharpen !== undefined ? asciiOptions.edgeSharpen : 0.4,
+        contrast: asciiOptions.contrast !== undefined ? asciiOptions.contrast : 1.2,
+        charSetKey: asciiOptions.charSetKey || 'detailed',
+        invert: asciiOptions.invert || false
+      });
     }
   } catch (e) {
     console.warn("Failed to convert avatar to ASCII on server:", e);
@@ -64,6 +71,18 @@ export async function GET(request) {
 
   const userWidthParam = searchParams.get('asciiWidth') || searchParams.get('width');
   const targetAsciiWidth = userWidthParam ? parseInt(userWidthParam, 10) : 55;
+
+  const edgeSharpenParam = searchParams.get('edgeSharpen') ? parseFloat(searchParams.get('edgeSharpen')) : 0.4;
+  const contrastParam = searchParams.get('contrast') ? parseFloat(searchParams.get('contrast')) : 1.2;
+  const charSetKeyParam = searchParams.get('charSetKey') || searchParams.get('charSet') || 'detailed';
+  const invertParam = searchParams.get('invert') === 'true';
+
+  const asciiOptions = {
+    edgeSharpen: edgeSharpenParam,
+    contrast: contrastParam,
+    charSetKey: charSetKeyParam,
+    invert: invertParam
+  };
 
   let title = user ? `${user}@github` : 'username@hostname';
   let asciiLines = getDefaultAsciiAvatar();
@@ -139,7 +158,7 @@ export async function GET(request) {
         { key: "Followers", value: `${data.followers} | Following: ${data.following}` }
       ];
       if (data.avatarUrl) {
-        const serverAscii = await fetchAvatarAscii(data.avatarUrl, targetAsciiWidth);
+        const serverAscii = await fetchAvatarAscii(data.avatarUrl, targetAsciiWidth, asciiOptions);
         if (serverAscii && serverAscii.length > 0) {
           asciiLines = serverAscii;
         }

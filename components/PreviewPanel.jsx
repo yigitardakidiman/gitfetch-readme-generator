@@ -53,9 +53,17 @@ export default function PreviewPanel({ state, onShowToast }) {
     ? window.location.origin
     : 'https://gitfetch-readme-generator.vercel.app';
 
-  const asciiWidthParam = state.asciiWidth ? `&asciiWidth=${state.asciiWidth}` : '';
-  const shortApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${asciiWidthParam}`;
-  const liveApiUrl = `${baseUrl}/api/svg?user=${encodeURIComponent(state.headerTitle.split('@')[0] || 'user')}&theme=${state.themeKey}${asciiWidthParam}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
+  const asciiParams = new URLSearchParams();
+  asciiParams.set('user', state.headerTitle.split('@')[0] || 'user');
+  asciiParams.set('theme', state.themeKey);
+  if (state.asciiWidth) asciiParams.set('asciiWidth', state.asciiWidth);
+  if (state.edgeSharpen !== undefined) asciiParams.set('edgeSharpen', state.edgeSharpen);
+  if (state.contrast !== undefined && state.contrast !== 1.2) asciiParams.set('contrast', state.contrast);
+  if (state.charSetKey && state.charSetKey !== 'detailed') asciiParams.set('charSetKey', state.charSetKey);
+  if (state.invert) asciiParams.set('invert', 'true');
+
+  const shortApiUrl = `${baseUrl}/api/svg?${asciiParams.toString()}`;
+  const liveApiUrl = `${baseUrl}/api/svg?${asciiParams.toString()}${encodedConfig ? `&config=${encodeURIComponent(encodedConfig)}` : ''}`;
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
@@ -225,7 +233,7 @@ export default function PreviewPanel({ state, onShowToast }) {
                 {copied === 'HTML Pre' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy HTML &lt;pre&gt;
               </button>
             </div>
-            <pre className="bg-[#0d1117] text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto border border-white/10 leading-relaxed">
+            <pre data-lenis-prevent className="bg-[#0d1117] text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto border border-white/10 leading-relaxed">
               {fullMarkdownCode}
             </pre>
           </div>
