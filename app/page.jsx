@@ -68,10 +68,10 @@ export default function LandingPage() {
         </div>
 
         <div className="max-w-6xl mx-auto w-full flex flex-col items-center text-center gap-6 relative z-10">
-        {/* CLI Command Pill */}
+        {/* Live SVG API Badge Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#161b22] border border-[#30363d] text-[#8b949e] text-xs">
-          <span className="text-[#3fb950] font-bold">❯</span>
-          <span className="text-[#c9d1d9]">npx gitfetch --template=neofetch</span>
+          <span className="text-[#3fb950] font-bold">⚡</span>
+          <span className="text-[#c9d1d9]">Live SVG API & Terminal Profile Generator</span>
           <span className="bg-[#238636]/20 text-[#3fb950] text-[10px] font-bold px-2 py-0.5 rounded ml-1">v2.0</span>
         </div>
 
