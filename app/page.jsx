@@ -9,21 +9,6 @@ import LetterGlitch from '@/components/LetterGlitch';
 export default function LandingPage() {
   const [copied, setCopied] = useState(false);
 
-  const sampleAscii = [
-    "       g@M%V@%@v%N%Ww,      ",
-    "     ,.M*||*%'gNM=]mM%g||%N,",
-    "     p!  ' | ' ' ' ''||jhlj%W",
-    "    ,@L  '''||''|||j%M]M    ",
-    "   ..jJ'''''''''''''''''''i%Wg",
-    " /{|j]@@@@@@@@@pp,.         ",
-    " `]'|eeeeeeeeeeeeep         ",
-    "  :]%%%%@@@@@@%%%k%h '*||mkr",
-    "  j%M'   |jkk'  -~nrn=p|'   ",
-    " :|jrr^~             '| L'':!",
-    " j lp:,.  / @@  .:;\\nmy '   ",
-    " i r eeee@@M%M eeee ,*^*,p ::"
-  ];
-
   const handleCopyApi = () => {
     navigator.clipboard.writeText('<img src="https://your-domain.vercel.app/api/svg?user=username&theme=dracula" alt="Neofetch Terminal" />');
     setCopied(true);
@@ -113,45 +98,24 @@ export default function LandingPage() {
         </div>
 
         {/* Terminal Live Preview Window */}
-        <div className="w-full max-w-3xl mt-10 bg-[#0d1117] border border-[#30363d] rounded-lg text-left shadow-2xl overflow-hidden">
-          {/* Terminal Window Bar */}
-          <div className="bg-[#161b22] px-4 py-2.5 border-b border-[#30363d] flex items-center justify-between">
+        <div className="w-full max-w-3xl mt-8 bg-[#0d1117] border border-[#30363d] rounded-xl text-left shadow-2xl overflow-hidden flex flex-col items-center">
+          {/* Terminal Window Header Bar */}
+          <div className="w-full bg-[#161b22] px-4 py-2.5 border-b border-[#30363d] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-[#f85149]" />
               <span className="w-3 h-3 rounded-full bg-[#e3b341]" />
               <span className="w-3 h-3 rounded-full bg-[#3fb950]" />
             </div>
-            <span className="text-xs text-[#8b949e] font-mono">bash - 80x24 - neofetch</span>
+            <span className="text-xs text-[#8b949e] font-mono">README.md</span>
             <div className="w-12" />
           </div>
 
-          {/* Terminal Body */}
-          <div className="p-6 overflow-x-auto bg-[#0d1117]">
-            <div className="text-xs text-[#8b949e] mb-3">
-              <span className="text-[#3fb950] font-bold">developer@localhost</span>:<span className="text-[#58a6ff]">~</span>$ neofetch --profile
-            </div>
-
-            <div className="flex gap-4 items-start text-xs">
-              <div className="text-[#ff79c6] shrink-0 font-mono text-[10px] leading-tight select-none">
-                {sampleAscii.map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
-
-              <div className="flex-1 font-mono text-xs leading-relaxed text-[#c9d1d9]">
-                <div className="font-bold text-[#bd93f9]">developer@github</div>
-                <div className="text-[#6272a4]">-------------------</div>
-                <div><span className="text-[#8be9fd] font-semibold">OS:</span> ...... Windows 11, macOS, Linux</div>
-                <div><span className="text-[#8be9fd] font-semibold">Uptime:</span> .. 4 years, 7 months</div>
-                <div><span className="text-[#8be9fd] font-semibold">Host:</span> .... Full-Stack Developer</div>
-                <div><span className="text-[#8be9fd] font-semibold">IDE:</span> ..... VSCode 1.96.0</div>
-                <div className="mt-2 text-[#bd93f9] font-bold">- Contact -------------------</div>
-                <div><span className="text-[#8be9fd] font-semibold">Email:</span> .... your-email@gmail.com</div>
-                <div><span className="text-[#8be9fd] font-semibold">Website:</span> .. https://your-website.dev</div>
-                <div className="mt-2 text-[#bd93f9] font-bold">- GitHub Stats --------------</div>
-                <div><span className="text-[#8be9fd] font-semibold">Repos:</span> ... 42 | Stars: 156</div>
-              </div>
-            </div>
+          <div className="p-4 w-full flex justify-center bg-[#0d1117]">
+            <img
+              src="/api/svg?user=yigitardakidiman&theme=matrix&asciiWidth=75&edgeSharpen=0&contrast=1.7&config=eyJmaWVsZHMiOlt7ImtleSI6Ik9TIiwidmFsdWUiOiJXaW5kb3dzIDEwIn0seyJrZXkiOiJVcHRpbWUiLCJ2YWx1ZSI6IjEgeWVhcnMsIDcgbW9udGhzLCAxMiBkYXlzIn0seyJrZXkiOiJIb3N0IiwidmFsdWUiOiJGcmVlbGFuY2UgLyBPcGVuIFNvdXJjZSJ9LHsia2V5IjoiS2VybmVsIiwidmFsdWUiOiJqdXN0IGEgc29md3RhcmUgZW5naW5lZXJpbmcgc3R1ZGVudFxyXG4ifSx7ImtleSI6IklERSIsInZhbHVlIjoiVlNDb2RlLCBBbnRpZ3Jhdml0eSJ9LHsia2V5IjoiIiwidmFsdWUiOiIifSx7ImtleSI6Ikxhbmd1YWdlcy5Qcm9ncmFtbWluZyIsInZhbHVlIjoiUHl0aG9uLCBKYXZhU2NyaXB0LCBDIn0seyJrZXkiOiJMYW5ndWFnZXMuQ29tcHV0ZXIiLCJ2YWx1ZSI6IkhUTUwsIENTUyJ9LHsia2V5IjoiTGFuZ3VhZ2VzLlJlYWwiLCJ2YWx1ZSI6IkVuZ2xpc2gsIFR1cmtpc2gifSx7ImtleSI6IiIsInZhbHVlIjoiIn0seyJrZXkiOiJTRUNUSU9OOiBDb250YWN0IiwidmFsdWUiOiJDb250YWN0In0seyJrZXkiOiJFbWFpbCIsInZhbHVlIjoieWlnaXRhcmRha2lkaW1hbkBnbWFpbC5jb20ifSx7ImtleSI6IldlYnNpdGUiLCJ2YWx1ZSI6Imh0dHBzOi8vd3d3LmtpZGltYW4uY29tLyJ9LHsia2V5IjoiTGlua2VkSW4iLCJ2YWx1ZSI6Ii9pbi95aWdpdGFyZGFraWRpbWFuIn0seyJrZXkiOiJJbnN0YWdyYW0iLCJ2YWx1ZSI6IkBjb2Rld2l0aGtpZGltYW4ifSx7ImtleSI6IkxvY2F0aW9uIiwidmFsdWUiOiJFYXJ0aCJ9LHsia2V5IjoiIiwidmFsdWUiOiIifSx7ImtleSI6IlNFQ1RJT046IEdpdEh1YiBTdGF0cyIsInZhbHVlIjoiR2l0SHViIFN0YXRzIn0seyJrZXkiOiJSZXBvcyIsInZhbHVlIjoiMTQgfCBTdGFyczogMSJ9LHsia2V5IjoiRm9sbG93ZXJzIiwidmFsdWUiOiI8ICB8IEZvbGxvd2luZzogNiJ9XSwiaGVhZGVyVGl0bGUiOiJ5aWdpdGFyZGFraWRpbWFuQGdpdGh1YiIsImhlYWRlclNlcGFyYXRvciI6Ii0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIiwiY3VzdG9tVGhlbWUiOm51bGx9"
+              alt="GitFetch Terminal"
+              className="max-w-[680px] w-full h-auto rounded-lg shadow-xl"
+            />
           </div>
         </div>
         </div>

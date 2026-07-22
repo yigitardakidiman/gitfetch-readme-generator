@@ -16,8 +16,8 @@ import { imageToAscii, getDefaultAsciiAvatar } from '@/lib/ascii-engine';
 import { buildStatsLines, mergeSideBySide, buildMarkdownCodeBlock } from '@/lib/neofetch-builder';
 
 const INITIAL_STATE = {
-  headerTitle: "username@hostname",
-  headerSeparator: "-------------------",
+  headerTitle: "yigitardakidiman@github",
+  headerSeparator: "-----------------------",
   themeKey: "dracula",
   customThemeEnabled: false,
   customTheme: {
@@ -30,9 +30,7 @@ const INITIAL_STATE = {
     separator: "#6272a4",
     dots: ["#ff5555", "#f1fa8c", "#50fa7b"]
   },
-  selectedBadges: ["typescript", "react", "nextjs", "python", "docker"],
-  badgeStyle: "for-the-badge",
-  asciiWidth: 38,
+  asciiWidth: 55,
   customFontSize: 0,
   charSetKey: "detailed",
   contrast: 1.2,
@@ -42,31 +40,26 @@ const INITIAL_STATE = {
   bgThreshold: 0,
   dither: false,
   fields: [
-    { key: "OS", value: "Windows 11, macOS 15, Linux" },
-    { key: "Uptime", value: "4 years, 7 months, 12 days" },
-    { key: "Host", value: "Your Company, Inc." },
-    { key: "Kernel", value: "Full-Stack Developer" },
-    { key: "IDE", value: "VSCode 1.96.0, WebStorm 2024.3" },
+    { key: "OS", value: "Windows 10" },
+    { key: "Uptime", value: "1 years, 7 months, 12 days" },
+    { key: "Host", value: "Freelance / Open Source" },
+    { key: "Kernel", value: "just a sofwtare engineering student" },
+    { key: "IDE", value: "VSCode, Antigravity" },
     { key: "", value: "" },
-    { key: "Languages.Programming", value: "TypeScript, Python, Rust, Go" },
-    { key: "Languages.Computer", value: "HTML, CSS, JSON, YAML, SQL" },
+    { key: "Languages.Programming", value: "Python, JavaScript, C" },
+    { key: "Languages.Computer", value: "HTML, CSS" },
     { key: "Languages.Real", value: "English, Turkish" },
     { key: "", value: "" },
-    { key: "Hobbies.Software", value: "Open Source, Game Dev, AI/ML" },
-    { key: "Hobbies.Hardware", value: "Custom Keyboards, 3D Printing" },
-    { key: "", value: "" },
     { key: "SECTION: Contact", value: "Contact" },
-    { key: "Email.Personal", value: "your-email@gmail.com" },
-    { key: "Email.Work", value: "you@your-company.com" },
-    { key: "Website", value: "https://your-website.dev" },
-    { key: "LinkedIn", value: "your-linkedin" },
-    { key: "Twitter/X", value: "@your-handle" },
-    { key: "Discord", value: "your-discord" },
+    { key: "Email", value: "yigitardakidiman@gmail.com" },
+    { key: "Website", value: "https://www.kidiman.com/" },
+    { key: "LinkedIn", value: "/in/yigitardakidiman" },
+    { key: "Instagram", value: "@codewithkidiman" },
+    { key: "Location", value: "Earth" },
     { key: "", value: "" },
     { key: "SECTION: GitHub Stats", value: "GitHub Stats" },
-    { key: "Repos", value: "42 {Contributed: 78} | Stars: 156" },
-    { key: "Commits", value: "1,284 | Followers: 89" },
-    { key: "Lines of Code on GitHub", value: "215,430 (287,600++, 72,170--)" }
+    { key: "Repos", value: "14 | Stars: 1" },
+    { key: "Followers", value: "8  | Following: 6" }
   ]
 };
 

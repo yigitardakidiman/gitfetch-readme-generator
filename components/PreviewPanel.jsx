@@ -291,10 +291,10 @@ export default function PreviewPanel({ state, onShowToast }) {
                 GitHub profil resminizi ve bilgilerinizi otomatik canlı çeker. README.md için en kısa ve temiz linktir:
               </p>
               <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-cyan-400">{`<img src="${shortApiUrl}" alt="Neofetch Terminal" />`}</span>
+                <span className="flex-1 select-all text-cyan-400">{`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`}</span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(`<img src="${shortApiUrl}" alt="Neofetch Terminal" />`, 'Short API Link')}
+                  onClick={() => copyToClipboard(`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`, 'Short API Link')}
                   className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1"
                 >
                   {copied === 'Short API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
@@ -311,10 +311,10 @@ export default function PreviewPanel({ state, onShowToast }) {
                 Stüdyoda elle değiştirdiğiniz özel ASCII çizimlerini ve özelleştirilmiş alanları paket olarak saklar:
               </p>
               <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-slate-400">{`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`}</span>
+                <span className="flex-1 select-all text-slate-400">{`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`}</span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(`<img src="${liveApiUrl}" alt="Neofetch Terminal" />`, 'Full API Link')}
+                  onClick={() => copyToClipboard(`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`, 'Full API Link')}
                   className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1 border border-white/10"
                 >
                   {copied === 'Full API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
