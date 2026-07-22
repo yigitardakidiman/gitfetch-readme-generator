@@ -8,7 +8,7 @@ import jpeg from 'jpeg-js';
 
 export const runtime = 'nodejs';
 
-async function fetchAvatarAscii(avatarUrl, width = 38) {
+async function fetchAvatarAscii(avatarUrl, width = 54) {
   try {
     const res = await fetch(avatarUrl);
     if (!res.ok) return null;
@@ -25,7 +25,7 @@ async function fetchAvatarAscii(avatarUrl, width = 38) {
     }
 
     if (decoded && decoded.data) {
-      return rgbaToAscii(decoded.data, decoded.width, decoded.height, { width });
+      return rgbaToAscii(decoded.data, decoded.width, decoded.height, { width, autoEnhance: true, edgeSharpen: 0.4 });
     }
   } catch (e) {
     console.warn("Failed to convert avatar to ASCII on server:", e);
@@ -89,18 +89,33 @@ export async function GET(request) {
       const data = await fetchGitHubUser(user);
       title = `${data.username}@github`;
       fields = [
-        { key: "OS", value: "Ubuntu Linux, macOS, Web" },
+        { key: "OS", value: "Windows 11, macOS 15, Linux" },
         { key: "Uptime", value: data.uptime },
-        { key: "Host", value: data.company },
-        { key: "Bio", value: data.bio || "Open Source Developer" },
+        { key: "Host", value: data.company || "Freelance / Open Source" },
+        { key: "Kernel", value: data.bio || "Full-Stack Developer" },
+        { key: "IDE", value: "VSCode 1.96.0" },
+        { key: "", value: "" },
+        { key: "Languages.Programming", value: "TypeScript, Python, Rust, Go" },
+        { key: "Languages.Computer", value: "HTML, CSS, JSON, YAML, SQL" },
+        { key: "Languages.Real", value: "English, Turkish" },
+        { key: "", value: "" },
+        { key: "Hobbies.Software", value: "Open Source, Game Dev, AI/ML" },
+        { key: "Hobbies.Hardware", value: "Custom Keyboards, 3D Printing" },
+        { key: "", value: "" },
+        { key: "SECTION: Contact", value: "Contact" },
+        { key: "Email", value: "your-email@gmail.com" },
+        { key: "Website", value: data.blog || "https://www.kidiman.com/" },
+        { key: "LinkedIn", value: "your-linkedin" },
+        { key: "Twitter/X", value: data.twitter ? `@${data.twitter}` : "@your-handle" },
+        { key: "Discord", value: data.username },
+        { key: "Location", value: data.location || "Earth" },
         { key: "", value: "" },
         { key: "SECTION: GitHub Stats", value: "GitHub Stats" },
-        { key: "Repos", value: `${data.publicRepos} Public Repos` },
-        { key: "Followers", value: `${data.followers} Followers` },
-        { key: "Stars", value: `${data.stars} Total Stars` }
+        { key: "Repos", value: `${data.publicRepos} | Stars: ${data.stars}` },
+        { key: "Followers", value: `${data.followers} | Following: ${data.following}` }
       ];
       if (data.avatarUrl) {
-        const serverAscii = await fetchAvatarAscii(data.avatarUrl);
+        const serverAscii = await fetchAvatarAscii(data.avatarUrl, 54);
         if (serverAscii && serverAscii.length > 0) {
           asciiLines = serverAscii;
         }
