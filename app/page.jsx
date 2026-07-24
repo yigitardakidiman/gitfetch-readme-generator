@@ -7,14 +7,6 @@ import { COLOR_THEMES } from '@/lib/presets';
 import LetterGlitch from '@/components/LetterGlitch';
 
 export default function LandingPage() {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyApi = () => {
-    navigator.clipboard.writeText('<img src="https://your-domain.vercel.app/api/svg?user=username&theme=dracula" alt="Neofetch Terminal" />');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const handleScrollToSection = (e, id) => {
     e.preventDefault();
     const target = document.getElementById(id);
@@ -37,7 +29,6 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-6 text-xs text-[#8b949e]">
             <a href="#features" onClick={(e) => handleScrollToSection(e, 'features')} className="hover:text-[#58a6ff] transition-colors">/features</a>
-            <a href="#live-api" onClick={(e) => handleScrollToSection(e, 'live-api')} className="hover:text-[#58a6ff] transition-colors">/live-api</a>
             <a href="#themes" onClick={(e) => handleScrollToSection(e, 'themes')} className="hover:text-[#58a6ff] transition-colors">/themes</a>
             <a href="#faq" onClick={(e) => handleScrollToSection(e, 'faq')} className="hover:text-[#58a6ff] transition-colors">/faq</a>
           </div>
@@ -152,27 +143,6 @@ export default function LandingPage() {
                 Reorder stats fields, insert section headers, blank line gaps, and tech stack badges with drag & drop precision.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Live SVG Integration Code Block */}
-      <section id="live-api" className="py-16 px-6 max-w-5xl mx-auto w-full">
-        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6 flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-[#3fb950] font-mono">// README.md Integration</span>
-            <button
-              type="button"
-              onClick={handleCopyApi}
-              className="bg-[#21262d] hover:bg-[#30363d] text-xs text-[#c9d1d9] px-3 py-1.5 rounded border border-[#30363d] flex items-center gap-1.5 transition-all"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-[#3fb950]" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'copied!' : 'copy tag'}</span>
-            </button>
-          </div>
-
-          <div className="bg-[#0d1117] p-4 rounded border border-[#30363d] font-mono text-xs text-[#79c0ff] overflow-x-auto select-all">
-            {`<img src="https://your-domain.vercel.app/api/svg?user=your-username&theme=dracula" alt="Neofetch Terminal" />`}
           </div>
         </div>
       </section>
