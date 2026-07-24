@@ -178,13 +178,25 @@ export async function GET(request) {
     }
   }
 
+  const animateParam = searchParams.get('animate');
+  const cursorParam = searchParams.get('cursor');
+  const fadeParam = searchParams.get('fade');
+  const typewriterParam = searchParams.get('typewriter');
+
+  const animateCursor = cursorParam === 'true' || cursorParam === '1' || animateParam === 'true' || animateParam === '1';
+  const animateFade = fadeParam === 'true' || fadeParam === '1';
+  const animateTypewriter = typewriterParam === 'true' || typewriterParam === '1' || animateParam === 'true' || animateParam === '1';
+
   const separator = "-".repeat(title.length);
   const statsLines = buildStatsLines(title, separator, [{ name: "", fields }]);
 
   const svgContent = generateSvgCard(asciiLines, statsLines, {
     themeKey,
     customTheme,
-    fontSize
+    fontSize,
+    animateCursor,
+    animateFade,
+    animateTypewriter
   });
 
   return new Response(svgContent, {

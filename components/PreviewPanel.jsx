@@ -1,14 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { COLOR_THEMES } from '@/lib/presets';
 import { buildStatsLines, mergeSideBySide, buildMarkdownCodeBlock, buildHtmlPreBlock } from '@/lib/neofetch-builder';
 import { generateSvgCard } from '@/lib/svg-exporter';
-import { Copy, Download, Terminal, Code, FileCode, Link, Check } from 'lucide-react';
+import { Copy, Download, Terminal, FileCode, Link, Check, Play } from 'lucide-react';
 
 export default function PreviewPanel({ state, onShowToast }) {
   const [activeTab, setActiveTab] = useState('terminal'); // 'terminal' | 'markdown' | 'svg' | 'api'
   const [copied, setCopied] = useState('');
+  const [isPlayingAnim, setIsPlayingAnim] = useState(false);
+  const [animTimer, setAnimTimer] = useState(null);
+
+  const handleReplayAnimation = () => {
+    setActiveTab('svg');
+    setIsPlayingAnim(true);
+    if (onShowToast) onShowToast('▶ Playing animation effect!');
+    
+    if (animTimer) clearTimeout(animTimer);
+    const timer = setTimeout(() => {
+      setIsPlayingAnim(false);
+    }, 3500);
+    setAnimTimer(timer);
+  };
+
+  useEffect(() => {
+    if (state.animTrigger) {
+      handleReplayAnimation();
+    }
+  }, [state.animTrigger]);
 
   const theme = state.customThemeEnabled && state.customTheme ? state.customTheme : (COLOR_THEMES[state.themeKey] || COLOR_THEMES.dracula);
   const statsLines = buildStatsLines(state.headerTitle, state.headerSeparator, [{ name: "", fields: state.fields }]);
@@ -17,10 +37,27 @@ export default function PreviewPanel({ state, onShowToast }) {
   const fullMarkdownCode = mdCode;
 
   const htmlPreCode = buildHtmlPreBlock(mergedLines, state.customFontSize > 0 ? state.customFontSize : 10);
+  
+  // Live Studio SVG preview (static when editing, animated when button clicked)
   const svgCode = generateSvgCard(state.asciiLines, statsLines, {
     themeKey: state.themeKey,
     customTheme: state.customThemeEnabled ? state.customTheme : null,
-    fontSize: state.customFontSize > 0 ? state.customFontSize : undefined
+    fontSize: state.customFontSize > 0 ? state.customFontSize : undefined,
+    animateCursor: state.animateCursor,
+    animateTypewriter: state.animateTypewriter,
+    animateFade: state.animateFade,
+    isStudioPreview: true,
+    previewPlaying: isPlayingAnim
+  });
+
+  // Raw SVG code for export / copy
+  const exportSvgCode = generateSvgCard(state.asciiLines, statsLines, {
+    themeKey: state.themeKey,
+    customTheme: state.customThemeEnabled ? state.customTheme : null,
+    fontSize: state.customFontSize > 0 ? state.customFontSize : undefined,
+    animateCursor: state.animateCursor,
+    animateTypewriter: state.animateTypewriter,
+    animateFade: state.animateFade
   });
 
   let encodedConfig = '';
@@ -54,6 +91,9 @@ export default function PreviewPanel({ state, onShowToast }) {
   const asciiParams = new URLSearchParams();
   asciiParams.set('user', state.headerTitle.split('@')[0] || 'user');
   asciiParams.set('theme', state.themeKey);
+  if (state.animateCursor) asciiParams.set('cursor', 'true');
+  if (state.animateTypewriter) asciiParams.set('typewriter', 'true');
+  if (state.animateFade) asciiParams.set('fade', 'true');
   if (state.asciiWidth) asciiParams.set('asciiWidth', state.asciiWidth);
   if (state.edgeSharpen !== undefined) asciiParams.set('edgeSharpen', state.edgeSharpen);
   if (state.contrast !== undefined && state.contrast !== 1.2) asciiParams.set('contrast', state.contrast);
@@ -98,7 +138,7 @@ export default function PreviewPanel({ state, onShowToast }) {
   };
 
   const handleDownloadSvg = () => {
-    const blob = new Blob([svgCode], { type: 'image/svg+xml;charset=utf-8' });
+    const blob = new Blob([exportSvgCode], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -120,9 +160,9 @@ export default function PreviewPanel({ state, onShowToast }) {
   }
 
   return (
-    <div className="flex flex-col bg-[#111827]/80 border border-white/10 rounded-2xl backdrop-blur-md overflow-hidden shadow-2xl">
+    <div className="flex flex-col bg-[#111827]/80 border border-white/10 rounded-2xl backdrop-blur-md overflow-hidden shadow-2xl min-w-0 w-full">
       {/* Tab Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-slate-900/60 flex-wrap gap-2">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-slate-900/60 flex-wrap gap-2 min-w-0 w-full">
         <div className="flex bg-slate-950 p-1 rounded-xl border border-white/5">
           <button
             type="button"
@@ -132,15 +172,6 @@ export default function PreviewPanel({ state, onShowToast }) {
             }`}
           >
             <Terminal className="w-3.5 h-3.5" /> Terminal
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('markdown')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'markdown' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Code className="w-3.5 h-3.5" /> Markdown
           </button>
           <button
             type="button"
@@ -162,19 +193,29 @@ export default function PreviewPanel({ state, onShowToast }) {
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleDownloadSvg}
-          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 transition-all"
-        >
-          <Download className="w-3.5 h-3.5 text-cyan-400" /> Download SVG
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleReplayAnimation}
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md transition-all border border-indigo-400/30"
+          >
+            <Play className="w-3.5 h-3.5 fill-current text-white" /> Replay Animations
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDownloadSvg}
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 transition-all"
+          >
+            <Download className="w-3.5 h-3.5 text-cyan-400" /> Download SVG
+          </button>
+        </div>
       </div>
 
       {/* Preview Content Area */}
-      <div className="p-6 overflow-x-auto min-h-[420px] flex flex-col justify-center" style={{ backgroundColor: theme.cardBg }}>
+      <div className="p-6 overflow-hidden min-h-[420px] flex flex-col justify-center min-w-0 w-full" style={{ backgroundColor: theme.cardBg }}>
         {activeTab === 'terminal' && (
-          <div className="flex gap-[0.6rem] items-start transition-all" style={{ color: theme.text }}>
+          <div className="flex gap-[0.6rem] items-start transition-all overflow-x-auto" style={{ color: theme.text }}>
             {/* ASCII Column */}
             <div
               className="font-mono whitespace-pre shrink-0"
@@ -240,84 +281,82 @@ export default function PreviewPanel({ state, onShowToast }) {
           </div>
         )}
 
-        {activeTab === 'markdown' && (
-          <div className="flex flex-col gap-4">
+        {activeTab === 'svg' && (
+          <div className="flex flex-col gap-4 items-center w-full min-w-0">
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => copyToClipboard(fullMarkdownCode, 'Markdown Code')}
-                className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                onClick={handleReplayAnimation}
+                className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg shadow-md transition-all border border-indigo-400/30"
               >
-                {copied === 'Markdown Code' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy Markdown
+                <Play className="w-3.5 h-3.5 fill-current" /> Replay Animations
               </button>
               <button
                 type="button"
-                onClick={() => copyToClipboard(htmlPreCode, 'HTML Pre')}
+                onClick={() => copyToClipboard(exportSvgCode, 'SVG XML')}
                 className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 transition-all"
               >
-                {copied === 'HTML Pre' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy HTML &lt;pre&gt;
+                {copied === 'SVG XML' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy Raw SVG XML
               </button>
             </div>
-            <pre data-lenis-prevent className="bg-[#0d1117] text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto border border-white/10 leading-relaxed">
-              {fullMarkdownCode}
-            </pre>
-          </div>
-        )}
-
-        {activeTab === 'svg' && (
-          <div className="flex flex-col gap-4 items-center">
-            <button
-              type="button"
-              onClick={() => copyToClipboard(svgCode, 'SVG XML')}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 transition-all"
-            >
-              {copied === 'SVG XML' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copy Raw SVG XML
-            </button>
             <div
-              className="w-full flex justify-center overflow-x-auto"
+              key={isPlayingAnim ? 'playing' : 'static'}
+              className="w-full flex justify-center overflow-x-auto p-2"
               dangerouslySetInnerHTML={{ __html: svgCode }}
             />
           </div>
         )}
 
         {activeTab === 'api' && (
-          <div className="flex flex-col gap-4 text-slate-200">
+          <div className="flex flex-col gap-4 text-slate-200 min-w-0 w-full">
             {/* Option 1: Clean Short Live Link */}
-            <div className="bg-indigo-500/10 border border-indigo-500/30 p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-indigo-500/10 border border-indigo-500/30 p-4 rounded-xl flex flex-col gap-2 min-w-0 w-full overflow-hidden">
               <h3 className="font-bold text-sm text-indigo-300 flex items-center gap-2">
-                <span>⚡ 1. Kısa & Temiz Canlı Link (Önerilen)</span>
+                <span>1. Short & Clean Live API Link (Recommended)</span>
               </h3>
               <p className="text-xs text-slate-300">
-                GitHub profil resminizi ve bilgilerinizi otomatik canlı çeker. README.md için en kısa ve temiz linktir:
+                Automatically fetches your live GitHub avatar & profile info. Cleanest link for your README.md:
               </p>
-              <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-cyan-400">{`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`}</span>
+              <div className="flex gap-3 items-center bg-slate-950 px-3 py-2.5 rounded-lg border border-white/10 min-w-0 w-full overflow-hidden">
+                <span
+                  title={`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`}
+                  className="flex-1 min-w-0 block truncate font-mono text-xs text-cyan-400 select-all whitespace-nowrap overflow-hidden"
+                >
+                  {`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`}
+                </span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(`<img src="${shortApiUrl}" alt="GitFetch Terminal" />`, 'Short API Link')}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
                 >
-                  {copied === 'Short API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
+                  {copied === 'Short API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>Copy</span>
                 </button>
               </div>
             </div>
 
             {/* Option 2: Full State Custom Link */}
-            <div className="bg-slate-900/60 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-slate-900/60 border border-white/10 p-4 rounded-xl flex flex-col gap-2 min-w-0 w-full overflow-hidden">
               <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                <span>🛠️ 2. Özel Stüdyo Çizimi İçeren Tam Link</span>
+                <span>2. Custom Studio State Encoded API Link</span>
               </h3>
               <p className="text-xs text-slate-400">
-                Stüdyoda elle değiştirdiğiniz özel ASCII çizimlerini ve özelleştirilmiş alanları paket olarak saklar:
+                Encodes custom hand-edited ASCII art and custom fields directly inside the URL parameters:
               </p>
-              <div className="flex gap-2 items-center bg-slate-950 p-2.5 rounded-lg border border-white/10 font-mono text-xs overflow-x-auto">
-                <span className="flex-1 select-all text-slate-400">{`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`}</span>
+              <div className="flex gap-3 items-center bg-slate-950 px-3 py-2.5 rounded-lg border border-white/10 min-w-0 w-full overflow-hidden">
+                <span
+                  title={`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`}
+                  className="flex-1 min-w-0 block truncate font-mono text-xs text-slate-400 select-all whitespace-nowrap overflow-hidden"
+                >
+                  {`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`}
+                </span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(`<img src="${liveApiUrl}" alt="GitFetch Terminal" />`, 'Full API Link')}
-                  className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded text-xs font-semibold shrink-0 flex items-center gap-1 border border-white/10"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-md transition-all cursor-pointer border border-indigo-400/20"
                 >
-                  {copied === 'Full API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Kopyala
+                  {copied === 'Full API Link' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>Copy</span>
                 </button>
               </div>
             </div>

@@ -1,12 +1,14 @@
 'use client';
 
 import { CHAR_SETS } from '@/lib/ascii-engine';
+import { RotateCcw } from 'lucide-react';
 
 export default function AsciiControls({
   state,
   onChangeState,
   onImageLoaded,
   onSelectPresetAscii,
+  onRestoreGitHubAvatar,
   avatarThumbnail
 }) {
   const handleFileChange = (e) => {
@@ -31,6 +33,18 @@ export default function AsciiControls({
   return (
     <div className="flex flex-col gap-4 text-xs">
 
+      {/* GitHub Avatar Restore Button */}
+      {onRestoreGitHubAvatar && (
+        <button
+          type="button"
+          onClick={onRestoreGitHubAvatar}
+          className="w-full flex items-center justify-center gap-2 bg-indigo-950/80 hover:bg-indigo-900/80 text-indigo-300 font-semibold text-xs py-2 px-3 rounded-lg border border-indigo-500/30 transition-all shadow-sm"
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-indigo-400" />
+          <span>Restore GitHub Profile Picture</span>
+        </button>
+      )}
+
       {/* File Dropzone */}
       <div
         onDragOver={(e) => e.preventDefault()}
@@ -38,7 +52,7 @@ export default function AsciiControls({
         onClick={() => document.getElementById('nextFileInput')?.click()}
         className="border-2 border-dashed border-white/20 hover:border-indigo-400/60 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-900/50"
       >
-        <p className="text-slate-300 font-medium">📸 Drop image here or click to upload</p>
+        <p className="text-slate-300 font-medium">Drop image here or click to upload</p>
         <input
           type="file"
           id="nextFileInput"
@@ -55,7 +69,7 @@ export default function AsciiControls({
           type="text"
           placeholder="https://example.com/avatar.jpg"
           onChange={(e) => e.target.value.trim() && onImageLoaded(e.target.value.trim())}
-          className="bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500"
+          className="bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
         />
       </div>
 
@@ -79,7 +93,7 @@ export default function AsciiControls({
             onClick={() => onChangeState({ asciiWidth: 42 })}
             className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-1 px-2 rounded text-[10px]"
           >
-            ⚡ README.md (42)
+            README.md (42)
           </button>
           <button
             type="button"
