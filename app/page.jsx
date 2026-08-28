@@ -24,7 +24,7 @@ export default function LandingPage() {
             <div className="bg-[#21262d] border border-[#30363d] text-[#58a6ff] px-2.5 py-1 rounded text-xs font-bold font-mono">
               $ gitfetch
             </div>
-            <span className="text-xs text-[#8b949e] hidden sm:inline-block">v1.5.0</span>
+            <span className="text-xs text-[#8b949e] hidden sm:inline-block">v1.0.0</span>
           </div>
 
           <div className="hidden md:flex items-center gap-6 text-xs text-[#8b949e]">
@@ -63,7 +63,7 @@ export default function LandingPage() {
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#161b22] border border-[#30363d] text-[#8b949e] text-xs">
           <Zap className="w-3.5 h-3.5 text-[#3fb950]" />
           <span className="text-[#c9d1d9]">Live SVG API & Terminal Profile Generator</span>
-          <span className="bg-[#238636]/20 text-[#3fb950] text-[10px] font-bold px-2 py-0.5 rounded ml-1">v1.5</span>
+          <span className="bg-[#238636]/20 text-[#3fb950] text-[10px] font-bold px-2 py-0.5 rounded ml-1">v1.0</span>
         </div>
 
         {/* Headline */}
@@ -203,7 +203,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-[#30363d] py-6 px-6 bg-[#161b22] text-center text-xs text-[#8b949e]">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div>neofetch-readme-generator // v2.0.0</div>
+          <div>neofetch-readme-generator // v1.0.0</div>
           <div>Inspired by Andrew6rant/Andrew6rant</div>
         </div>
       </footer>
