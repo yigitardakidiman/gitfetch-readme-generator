@@ -205,7 +205,7 @@ export default function StudioPage() {
         { key: "SECTION: Contact", value: "Contact" },
         { key: "Email", value: "your-email@gmail.com" },
         { key: "Website", value: data.blog || "https://your-website.dev" },
-        { key: "LinkedIn", value: "your-linkedin" },
+        { key: "LinkedIn", value: data.linkedin || "your-linkedin" },
         { key: "Twitter/X", value: data.twitter ? `@${data.twitter}` : "@your-handle" },
         { key: "Discord", value: data.username },
         { key: "Location", value: data.location },
