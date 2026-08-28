@@ -203,7 +203,7 @@ export default function StudioPage() {
         { key: "Hobbies.Hardware", value: "Custom Keyboards, 3D Printing" },
         { key: "", value: "" },
         { key: "SECTION: Contact", value: "Contact" },
-        { key: "Email", value: "your-email@gmail.com" },
+        { key: "Email", value: data.email || "your-email@gmail.com" },
         { key: "Website", value: data.blog || "https://your-website.dev" },
         { key: "LinkedIn", value: data.linkedin || "your-linkedin" },
         { key: "Twitter/X", value: data.twitter ? `@${data.twitter}` : "@your-handle" },
