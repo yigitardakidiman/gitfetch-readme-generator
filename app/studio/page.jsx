@@ -195,7 +195,7 @@ export default function StudioPage() {
         { key: "Kernel", value: data.bio || "Open Source Developer" },
         { key: "IDE", value: "VSCode 1.96.0" },
         { key: "", value: "" },
-        { key: "Languages.Programming", value: "TypeScript, Python, Rust, Go" },
+        { key: "Languages.Programming", value: data.languages || "TypeScript, Python, Rust, Go" },
         { key: "Languages.Computer", value: "HTML, CSS, JSON, YAML, SQL" },
         { key: "Languages.Real", value: "English, Turkish" },
         { key: "", value: "" },
