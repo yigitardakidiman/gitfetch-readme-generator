@@ -9,29 +9,39 @@ export default function CustomThemePicker({ theme, onChangeTheme }) {
   };
 
   const fields = [
-    { key: 'cardBg', label: 'Card Background' },
-    { key: 'title', label: 'Title & Headers' },
-    { key: 'key', label: 'Stats Keys' },
-    { key: 'value', label: 'Stats Values' },
-    { key: 'ascii', label: 'ASCII Art Color' },
-    { key: 'separator', label: 'Separators & Dots' }
+    { key: 'cardBg', label: 'Background' },
+    { key: 'title', label: 'Header / Title' },
+    { key: 'key', label: 'Field Keys' },
+    { key: 'value', label: 'Field Values' },
+    { key: 'ascii', label: 'ASCII Art' },
+    { key: 'separator', label: 'Separators' }
   ];
 
   return (
-    <div className="flex flex-col gap-2.5 text-xs">
-      <div className="grid grid-cols-2 gap-2">
-        {fields.map(f => (
-          <div key={f.key} className="flex items-center justify-between bg-slate-900/60 p-2 rounded-lg border border-white/5">
-            <span className="text-slate-300 font-medium text-[11px]">{f.label}</span>
-            <input
-              type="color"
-              value={theme[f.key] || '#ffffff'}
-              onChange={(e) => handleColorChange(f.key, e.target.value)}
-              className="w-6 h-6 rounded cursor-pointer border-0 bg-transparent"
-            />
-          </div>
-        ))}
-      </div>
+    <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+      {fields.map((f) => {
+        const currentHex = theme[f.key] || '#ffffff';
+        return (
+          <label
+            key={f.key}
+            className="flex items-center justify-between bg-[#0d1117] hover:border-[#8b949e] p-2 rounded-md border border-[#30363d] cursor-pointer transition-colors"
+          >
+            <div className="flex flex-col min-w-0">
+              <span className="text-[#c9d1d9] font-medium text-[11px] truncate">{f.label}</span>
+              <span className="text-[10px] text-[#8b949e] uppercase tabular-nums">{currentHex}</span>
+            </div>
+            <div className="relative flex items-center shrink-0">
+              <input
+                type="color"
+                value={currentHex}
+                onChange={(e) => handleColorChange(f.key, e.target.value)}
+                className="w-6 h-6 rounded cursor-pointer border border-[#30363d] bg-transparent p-0"
+              />
+            </div>
+          </label>
+        );
+      })}
     </div>
   );
 }
+
