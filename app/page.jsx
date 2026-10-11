@@ -95,7 +95,7 @@ export default function LandingPage() {
               <Terminal className="w-3.5 h-3.5 text-[#3fb950]" />
               <span>$ gitfetch</span>
             </Link>
-            <span className="text-xs text-[#8b949e] font-mono hidden sm:inline-block">v1.0.0</span>
+            <span className="text-xs text-[#8b949e] font-mono hidden sm:inline-block">v1.2.0</span>
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6 text-xs font-mono text-[#8b949e] overflow-x-auto">
@@ -486,7 +486,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-[#c9d1d9] font-bold">gitfetch</span>
-            <span>// v1.0.0 — Terminal Profile Cards for GitHub</span>
+            <span>// v1.2.0 — Terminal Profile Cards for GitHub</span>
           </div>
           <div>Inspired by neofetch &amp; Andrew6rant</div>
         </div>
